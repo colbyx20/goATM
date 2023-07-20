@@ -42,7 +42,7 @@ func (b *Bank) Details(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]*Bank{b.Name: b})
 }
 
-func (b *Bank) DepositeMoney(w http.ResponseWriter, r *http.Request) {
+func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 
@@ -70,7 +70,35 @@ func (b *Bank) DepositeMoney(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (b *Bank) WithdrawMoney(w http.ResponseWriter, r *http.Request) {
+func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
+
+	name := mux.Vars(r)["name"]
+
+	newTransaction := new(Statements)
+
+	// Decode incoming request from the r.Body
+	json.NewDecoder(r.Body).Decode(newTransaction)
+	defer r.Body.Close()
+
+	newTransaction.Id = rand.Intn(10000)
+	newTransaction.UID = b.Users[name].Id
+	newTransaction.TransactionType = "Deposit"
+	newTransaction.TransactionDate = time.Now()
+
+	u, ok := b.Users[name]
+
+	if ok {
+		u.SavingsBalance += newTransaction.TransactionAmount
+		u.BankStatement = append(u.BankStatement, newTransaction)
+		json.NewEncoder(w).Encode(&newTransaction)
+		return
+	} else {
+		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
+		return
+	}
+}
+
+func (b *Bank) WithdrawMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 
@@ -90,6 +118,35 @@ func (b *Bank) WithdrawMoney(w http.ResponseWriter, r *http.Request) {
 
 	if ok {
 		u.CheckingBalance -= newTransaction.TransactionAmount
+		u.BankStatement = append(u.BankStatement, newTransaction)
+		json.NewEncoder(w).Encode(&newTransaction)
+		return
+	} else {
+		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
+		return
+	}
+}
+
+func (b *Bank) WithdrawMoneySavings(w http.ResponseWriter, r *http.Request) {
+
+	name := mux.Vars(r)["name"]
+
+	newTransaction := new(Statements)
+
+	// Decode incoming request from the r.Body
+	json.NewDecoder(r.Body).Decode(newTransaction)
+	defer r.Body.Close()
+
+	newTransaction.Id = rand.Intn(10000)
+	newTransaction.UID = b.Users[name].Id
+	newTransaction.TransactionType = "Withdraw"
+	newTransaction.TransactionDate = time.Now()
+
+	// does user exists?
+	u, ok := b.Users[name]
+
+	if ok {
+		u.SavingsBalance -= newTransaction.TransactionAmount
 		u.BankStatement = append(u.BankStatement, newTransaction)
 		json.NewEncoder(w).Encode(&newTransaction)
 		return
