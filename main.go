@@ -42,13 +42,7 @@ func (u *User) CreateStatement() {
 func main() {
 
 	router := mux.NewRouter()
-
 	bank := CreateBank()
-	// bank.Teller = make(map[int]*Teller)
-	// t1 := CreateTeller()
-	// bank.Teller[t1.Id] = t1
-
-	// fmt.Println(*bank.Teller[1])
 
 	router.Use(loggingMiddleware)
 	router.HandleFunc("/bank", bank.Details).Methods("GET")
