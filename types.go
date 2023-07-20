@@ -25,8 +25,8 @@ type Bank struct {
 	Id   int    `json:"id"`
 	Name string `json:"bankname"`
 	// Users  []*User         `json:"users"`
-	Users  map[string]*User `json:"users"`
-	Teller map[int]*Teller  `json:"teller"`
+	Users map[string]*User `json:"users"`
+	// Teller map[int]*Teller  `json:"teller"`
 }
 
 type User struct {
@@ -43,6 +43,7 @@ type User struct {
 type Statements struct {
 	Id                int       `json:"id"`
 	UID               int       `json:"uid"`
+	TransactionType   string    `json:"transactiontype"`
 	TransactionAmount float32   `json:"transactionamount"`
 	TransactionDate   time.Time `json:"transactiondate"`
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -45,18 +44,20 @@ func main() {
 	router := mux.NewRouter()
 
 	bank := CreateBank()
-	bank.Teller = make(map[int]*Teller)
-	t1 := CreateTeller()
-	bank.Teller[t1.Id] = t1
+	// bank.Teller = make(map[int]*Teller)
+	// t1 := CreateTeller()
+	// bank.Teller[t1.Id] = t1
 
-	fmt.Println(*bank.Teller[1])
+	// fmt.Println(*bank.Teller[1])
 
 	router.Use(loggingMiddleware)
 	router.HandleFunc("/bank", bank.Details).Methods("GET")
 	router.HandleFunc("/create/user", bank.CreateUser).Methods("POST")
-	router.HandleFunc("/user", bank.PrintUser).Methods("GET")
+	router.HandleFunc("/user/{name}", bank.PrintUser).Methods("GET")
 	router.HandleFunc("/user/statement/{name}", bank.ViewStatement).Methods("GET")
-	router.HandleFunc("/user/DepositeMoney/{name}", bank.DepositeMoney).Methods("POST")
+	router.HandleFunc("/user/deposite/{name}", bank.DepositeMoney).Methods("POST")
+	router.HandleFunc("/user/withdraw/{name}", bank.WithdrawMoney).Methods("POST")
+	router.HandleFunc("/user/balance/{name}", bank.CheckBalance).Methods("GET")
 
 	// router.HandleFunc("/bank/teller/deposit", bank.DepositeMoney).Methods("POST")
 	// router.HandleFunc("/bank/teller/withdraw", bank.WithdrawMoney).Methods("POST")
