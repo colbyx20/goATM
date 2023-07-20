@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
@@ -9,16 +10,19 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type Banker interface {
-	PrintUser(w http.ResponseWriter, r *http.Request)
-}
-
 // constructor - creat user
-
 func CreateBank() *Bank {
 	return &Bank{
-		Id:   rand.Intn(100000),
-		Name: "FairWinds",
+		Id:    rand.Intn(100000),
+		Name:  "FairWinds",
+		Users: make(map[string]*User),
+	}
+}
+
+func CreateTeller() *Teller {
+	return &Teller{
+		Id:   1,
+		Name: "Teller",
 	}
 }
 
@@ -41,13 +45,23 @@ func main() {
 	router := mux.NewRouter()
 
 	bank := CreateBank()
+	bank.Teller = make(map[int]*Teller)
+	t1 := CreateTeller()
+	bank.Teller[t1.Id] = t1
+
+	fmt.Println(*bank.Teller[1])
 
 	router.Use(loggingMiddleware)
 	router.HandleFunc("/bank", bank.Details).Methods("GET")
 	router.HandleFunc("/create/user", bank.CreateUser).Methods("POST")
 	router.HandleFunc("/user", bank.PrintUser).Methods("GET")
 	router.HandleFunc("/user/statement/{name}", bank.ViewStatement).Methods("GET")
-	router.HandleFunc("/user/addTransaction/{name}", bank.AddTransaction).Methods("POST")
+	router.HandleFunc("/user/DepositeMoney/{name}", bank.DepositeMoney).Methods("POST")
+
+	// router.HandleFunc("/bank/teller/deposit", bank.DepositeMoney).Methods("POST")
+	// router.HandleFunc("/bank/teller/withdraw", bank.WithdrawMoney).Methods("POST")
+	// router.HandleFunc("/bank/teller/balance", bank.CheckBalance).Methods("GET")
+	// router.HandleFunc("/bank/teller/transfer", bank.TransferMoney).Methods("POST")
 
 	http.ListenAndServe(":4000", router)
 

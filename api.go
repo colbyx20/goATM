@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"time"
@@ -9,28 +10,45 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func UserExist(user map[string]*User, name string) bool {
+
+	_, ok := user[name]
+	if ok {
+		return false
+	}
+	return true
+
+}
+
 func (b *Bank) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	u := new(User)
 	json.NewDecoder(r.Body).Decode(u)
 	defer r.Body.Close()
 
-	for _, user := range b.Users {
-		if user.FirstName == u.FirstName {
-			json.NewEncoder(w).Encode(map[string]string{"User Already Exists! ": u.FirstName})
-			return
-		}
+	// for _, user := range b.Users {
+	// 	if user.FirstName == u.FirstName {
+	// 		json.NewEncoder(w).Encode(map[string]string{"User Already Exists! ": u.FirstName})
+	// 		return
+	// 	}
+	// }
+
+	ok := UserExist(b.Users, u.FirstName)
+	if ok {
+
+		u.Id = rand.Intn(1000)
+		u.BankNumber = rand.Intn(100000000)
+		u.CheckingBalance = 0
+		u.SavingsBalance = 0
+		u.CreatedAt = time.Now()
+		b.Users[u.FirstName] = u
+
+		// b.Users = append(b.Users, u)
+		json.NewEncoder(w).Encode(b.Users)
+
+	} else {
+		json.NewEncoder(w).Encode(map[string]string{"User Already Exists!": u.FirstName})
 	}
-
-	u.Id = rand.Intn(1000)
-	u.BankNumber = rand.Intn(100000000)
-	u.CheckingBalance = 0
-	u.SavingsBalance = 0
-	u.CreatedAt = time.Now()
-
-	b.Users = append(b.Users, u)
-
-	json.NewEncoder(w).Encode(u)
 
 }
 
@@ -40,7 +58,7 @@ func (b *Bank) Details(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]*Bank{b.Name: b})
 }
 
-func (b *Bank) AddTransaction(w http.ResponseWriter, r *http.Request) {
+func (b *Bank) DepositeMoney(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 
@@ -54,23 +72,35 @@ func (b *Bank) AddTransaction(w http.ResponseWriter, r *http.Request) {
 	newTransaction.UID = b.Id
 	newTransaction.TransactionDate = time.Now()
 
-	// find the user with name name
-	for _, user := range b.Users {
-		if user.FirstName == name {
-			user.CheckingBalance += newTransaction.TransactionAmount
-			user.BankStatement = append(user.BankStatement, newTransaction)
-			json.NewEncoder(w).Encode(&newTransaction)
-		} else {
-			json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
-		}
+	fmt.Println(name)
+	// does user exists?
+	ok := UserExist(b.Users, name)
+	fmt.Println(b.Users)
+	fmt.Println(ok)
+	if !ok {
+		b.Users[name].CheckingBalance += newTransaction.TransactionAmount
+		b.Users[name].BankStatement = append(b.Users[name].BankStatement, newTransaction)
+		json.NewEncoder(w).Encode(&newTransaction)
+
+	} else {
+		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
 	}
-	return
+
+	// // find the user with name name
+	// for _, user := range b.Users {
+	// 	if user.FirstName == name {
+	// 		user.CheckingBalance += newTransaction.TransactionAmount
+	// 		json.NewEncoder(w).Encode(&newTransaction)
+	// 	} else {
+	// 		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
+	// 	}
+	// }
 }
 
 func (b *Bank) PrintUser(w http.ResponseWriter, r *http.Request) {
 
-	w.WriteHeader(http.StatusOK) // send 200
-	json.NewEncoder(w).Encode(map[string][]*User{"test": b.Users})
+	// w.WriteHeader(http.StatusOK) // send 200
+	// json.NewEncoder(w).Encode(map[string][]*User{"test": b.Users})
 }
 
 func (b *Bank) ViewStatement(w http.ResponseWriter, r *http.Request) {
@@ -88,4 +118,31 @@ func (b *Bank) ViewStatement(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string][]*Statements{currUser.FirstName + " " + currUser.LastName: currUser.BankStatement})
+}
+
+// func (b *Bank) DepositeMoney(w http.ResponseWriter, r *http.Request) {
+
+// 	// var id int
+// 	// json.NewDecoder(r.Body).Decode(id)
+// 	// fmt.Println(id)
+// 	// json.NewEncoder(w).Encode(b)
+
+// }
+
+func (b *Bank) WithdrawMoney(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK) // send 200
+	json.NewEncoder(w).Encode("HI;lkj;LKj")
+}
+
+func (b *Bank) CheckBalance(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK) // send 200
+	json.NewEncoder(w).Encode("HI;lkj;LKj")
+}
+
+func (b *Bank) TransferMoney(w http.ResponseWriter, r *http.Request) {
+
+	w.WriteHeader(http.StatusOK) // send 200
+	json.NewEncoder(w).Encode("HI;lkj;LKj")
 }
