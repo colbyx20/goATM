@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"math/rand"
 	"net/http"
@@ -227,14 +228,36 @@ func (b *Bank) WithdrawMoneySavings(w http.ResponseWriter, r *http.Request) {
 
 func (b *Bank) PrintUser(w http.ResponseWriter, r *http.Request) {
 
-	name := mux.Vars(r)["name"]
-	json.NewDecoder(r.Body).Decode(&name)
+	// name := mux.Vars(r)["name"]
+	// json.NewDecoder(r.Body).Decode(&name)
 
+	// grab data from form
+
+	err := r.ParseForm()
+	if err != nil {
+		fmt.Fprintf(w, "Error on form")
+	}
+
+	name := r.FormValue("firstName")
 	user, ok := b.Users[name]
 
 	if ok {
-		w.WriteHeader(http.StatusOK) // send 200
-		json.NewEncoder(w).Encode(user)
+
+		data := struct {
+			User       *User // New user data
+			Bank       *Bank
+			Statements []*Statements
+		}{
+			User:       user,
+			Bank:       b,
+			Statements: user.BankStatement,
+		}
+
+		for _, value := range data.Statements {
+			fmt.Println(value)
+		}
+
+		renderHTMLTemplate(w, indexTemplate, data)
 		return
 	} else {
 		json.NewEncoder(w).Encode(map[string]string{"User doesn't Exist!": name})

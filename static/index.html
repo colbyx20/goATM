@@ -37,6 +37,14 @@
         <input type="submit" value="Create User">
     </form>
 
+    <form id="LoginForm" action="/user/login" method="post">
+        <label for="firstNameLogin">First Name:</label>
+        <input type="text" name="firstName" id="firstNameLogin" required>
+
+        <input type="submit" value="LoginUser">
+    </form>
+
+
     <div id="userInfo">
         {{if .User}}
         <p>User ID: {{.User.Id}}</p>
@@ -46,6 +54,14 @@
         <p>Checking Balance: {{.User.CheckingBalance}}</p>
         <p>Savings Balance: {{.User.SavingsBalance}}</p>
         <p>Created At: {{.User.CreatedAt}}</p>
+        <p>Bank: {{.Bank.Name}}</p>
+        <p>Checking Amount: {{.User.CheckingBalance}}</p>
+        <p>Savings Amount: {{.User.SavingsBalance}}</p>
+        {{range .User.BankStatement}}
+        <p>Action: {{.TransactionType}}</p>
+        <p>Amount: {{.TransactionAmount}}</p>
+        <p>Time: {{.TransactionDate}}</p>
+        {{end}}
         {{end}}
     </div>
 </body>

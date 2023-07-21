@@ -56,7 +56,7 @@ func main() {
 	router.Use(loggingMiddleware)
 	router.HandleFunc("/bank", bank.Details).Methods("GET")
 	router.HandleFunc("/create/user", bank.CreateUser).Methods("POST")
-	router.HandleFunc("/user/{name}", bank.PrintUser).Methods("GET")
+	router.HandleFunc("/user/login", bank.PrintUser).Methods("POST")
 	router.HandleFunc("/user/statement/{name}", bank.ViewStatement).Methods("GET")
 	router.HandleFunc("/user/deposite/checking/{name}", bank.DepositeMoneyChecking).Methods("POST")
 	router.HandleFunc("/user/deposite/savings/{name}", bank.DepositeMoneySavings).Methods("POST")
