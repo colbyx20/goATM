@@ -2,38 +2,12 @@ package main
 
 import (
 	"encoding/json"
-	"html/template"
 	"math/rand"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 )
-
-func renderHTMLTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tmpl.Execute(w, data)
-}
-
-func UserHandler(b *Bank) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		name := mux.Vars(r)["name"]
-		user, ok := b.Users[name]
-
-		if !ok {
-			http.Error(w, "User not found", http.StatusNotFound)
-			return
-		}
-
-		data := struct {
-			User *User
-		}{
-			User: user,
-		}
-
-		renderHTMLTemplate(w, userTemplate, data)
-	}
-}
 
 func (b *Bank) CreateUser(w http.ResponseWriter, r *http.Request) {
 
