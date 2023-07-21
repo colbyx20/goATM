@@ -17,6 +17,7 @@ const (
 )
 
 var indexTemplate *template.Template
+var userTemplate *template.Template
 
 // Function to render the HTML template
 func renderHTMLTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) {
@@ -26,6 +27,19 @@ func renderHTMLTemplate(w http.ResponseWriter, tmpl *template.Template, data int
 
 // Handler for the index page (GET request)
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	// You can pass any initial data to the template here (if needed)
+	data := struct {
+		User *User // Initial data (optional)
+	}{
+		User: nil, // Initial user data (set to nil initially)
+	}
+
+	// Render the HTML template with the initial data
+	renderHTMLTemplate(w, indexTemplate, data)
+}
+
+// Handler for the index page (GET request)
+func LoggedInHandler(w http.ResponseWriter, r *http.Request) {
 	// You can pass any initial data to the template here (if needed)
 	data := struct {
 		User *User // Initial data (optional)
@@ -257,7 +271,7 @@ func (b *Bank) PrintUser(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(value)
 		}
 
-		renderHTMLTemplate(w, indexTemplate, data)
+		renderHTMLTemplate(w, userTemplate, data)
 		return
 	} else {
 		json.NewEncoder(w).Encode(map[string]string{"User doesn't Exist!": name})

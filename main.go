@@ -47,12 +47,16 @@ func main() {
 
 	var err error
 	indexTemplate, err = template.ParseFiles("static/index.html")
+	userTemplate, err = template.ParseFiles("static/user.html")
 	if err != nil {
 		log.Fatal("Error parsing HTML template:", err)
 	}
 
+	// Page Render
 	router.HandleFunc("/", IndexHandler).Methods("GET")
+	router.HandleFunc("/user/login", LoggedInHandler).Methods("GET")
 
+	// API Calls
 	router.Use(loggingMiddleware)
 	router.HandleFunc("/bank", bank.Details).Methods("GET")
 	router.HandleFunc("/create/user", bank.CreateUser).Methods("POST")
