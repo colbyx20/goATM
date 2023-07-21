@@ -23,7 +23,7 @@
 
         .navbar {
             display: flex;
-            justify-content: flex-end;
+            justify-content: flex-start;
             border: 2px solid black;
         }
 
@@ -53,7 +53,10 @@
 
     <div class="navbar">
         <div class="logout-btn">
-            <button id="homeBtn" type="button" name="Logout">Logout</button>
+            <a href="#">Home</a>
+            <a href="#">BankStatement</a>
+            <a href="/">Logout</a>
+            <button class="toggleP">Funny</button>
         </div>
     </div>
 
@@ -84,11 +87,29 @@
         </div>
     </div>
 
+    <div class="transaction">
+        <p>Transaction</p>
+        <button type="radio">Withdraw</button>
+        <button type="radio">Deposit</button>
+        Amount: <input type="text" action="#" method="post" />
+
+    </div>
+
     <script>
 
-        document.getElementById("homeBtn").addEventListener("click", () => {
-            window.location.href = "/"
-        })
+        $(document).ready(() => {
+            // Add click event listener to toggle the visibility of <p> elements
+            $(".toggleP").click(function () {
+                $("p").toggle();
+            });
+
+            // Add hover event listener to change the color of .statements element
+            $("p").hover(function () {
+                $("p").css("color", "blue");
+            }, function () {
+                $("p").css("color", "black");
+            });
+        });
 
     </script>
 </body>
