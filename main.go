@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"math/rand"
 	"net/http"
@@ -39,10 +40,23 @@ func (u *User) CreateStatement() {
 
 }
 
+var userTemplate *template.Template
+
+func init() {
+	var err error
+	userTemplate, err = template.ParseFiles("path/to/user.html")
+	if err != nil {
+		log.Fatal("Error parsing user HTML template:", err)
+	}
+}
 func main() {
 
 	router := mux.NewRouter()
 	bank := CreateBank()
+
+	userTemplate, _ = template.ParseFiles("/home/colby/goATM/static/index.html")
+
+	router.HandleFunc("/user/{name}", UserHandler(bank)).Methods("GET")
 
 	router.Use(loggingMiddleware)
 	router.HandleFunc("/bank", bank.Details).Methods("GET")

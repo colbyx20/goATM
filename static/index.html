@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bank App</title>
+    <!-- <link rel="stylesheet" type="text/css" href="/home/colby/goATM/static/styles.css"> -->
+
+    <style>
+        /* styles.css */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <h1>User Data</h1>
+    <p>First Name: {{.User.FirstName}}</p>
+    <p>Last Name: {{.User.LastName}}</p>
+    <p>Bank Number: {{.User.BankNumber}}</p>
+    <p>Checking Balance: {{.User.CheckingBalance}}</p>
+    <p>Savings Balance: {{.User.SavingsBalance}}</p>
+    <p>Created At: {{.User.CreatedAt}}</p>
+
+    <h2>Bank Statement:</h2>
+    <ul>
+        {{range .User.BankStatement}}
+        <li>Transaction Type: {{.TransactionType}}, Amount: {{.TransactionAmount}}, Date: {{.TransactionDate}}</li>
+        {{end}}
+    </ul>
+</body>
+
+</html>
