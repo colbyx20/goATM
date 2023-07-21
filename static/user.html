@@ -4,7 +4,7 @@
 <head>
     <title>Bank App</title>
     <!-- <link rel="stylesheet" type="text/css" href="/home/colby/goATM/static/styles.css"> -->
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <style>
         /* styles.css */
         body {
@@ -20,50 +20,77 @@
             background-color: #fff;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+
+        .navbar {
+            display: flex;
+            justify-content: flex-end;
+            border: 2px solid black;
+        }
+
+        .row {
+            display: flex;
+            border: 2px solid black;
+        }
+
+        .userInfo {
+            flex-grow: 40%;
+            border: 2px solid black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .statements {
+            flex-grow: 60%;
+            border: 2px solid black;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
     </style>
+
+
 </head>
 
 <body>
     <h1>{{.User.FirstName}} has logged in</h1>
-    <p>This is the front-end of the bank application.</p>
 
-    <!-- <form id="userForm" action="/create/user" method="post">
-        <label for="firstName">First Name:</label>
-        <input type="text" name="firstName" id="firstName" required>
-
-        <label for="lastName">Last Name:</label>
-        <input type="text" name="lastName" id="lastName" required>
-
-        <input type="submit" value="Create User">
-    </form>
-
-    <form id="LoginForm" action="/user/login" method="post">
-        <label for="firstNameLogin">First Name:</label>
-        <input type="text" name="firstName" id="firstNameLogin" required>
-
-        <input type="submit" value="LoginUser">
-    </form> -->
-
-
-    <div id="userInfo">
-        {{if .User}}
-        <p>User ID: {{.User.Id}}</p>
-        <p>First Name: {{.User.FirstName}}</p>
-        <p>Last Name: {{.User.LastName}}</p>
-        <p>Bank Number: {{.User.BankNumber}}</p>
-        <p>Checking Balance: {{.User.CheckingBalance}}</p>
-        <p>Savings Balance: {{.User.SavingsBalance}}</p>
-        <p>Created At: {{.User.CreatedAt}}</p>
-        <p>Bank: {{.Bank.Name}}</p>
-        <p>Checking Amount: {{.User.CheckingBalance}}</p>
-        <p>Savings Amount: {{.User.SavingsBalance}}</p>
-        {{range .User.BankStatement}}
-        <p>Action: {{.TransactionType}}</p>
-        <p>Amount: {{.TransactionAmount}}</p>
-        <p>Time: {{.TransactionDate}}</p>
-        {{end}}
-        {{end}}
+    <div class="navbar">
+        <div class="logout-btn">
+            <button id="homeBtn" type="button" name="Logout">Logout</button>
+        </div>
     </div>
+
+    <div class="row">
+
+        <div class="userInfo">
+            {{if .User}}
+
+            <p>User ID: {{.User.Id}}</p>
+            <p>First Name: {{.User.FirstName}}</p>
+            <p>Last Name: {{.User.LastName}}</p>
+            <p>Bank Number: {{.User.BankNumber}}</p>
+            <p>Checking Balance: {{.User.CheckingBalance}}</p>
+            <p>Savings Balance: {{.User.SavingsBalance}}</p>
+            <p>Created At: {{.User.CreatedAt}}</p>
+            <p>Bank: {{.Bank.Name}}</p>
+            <p>Checking Amount: {{.User.CheckingBalance}}</p>
+            <p>Savings Amount: {{.User.SavingsBalance}}</p>
+        </div>
+
+        <div class="statements">
+            {{range .User.BankStatement}}
+            <p>Action: {{.TransactionType}}</p>
+            <p>Amount: {{.TransactionAmount}}</p>
+            <p>Time: {{.TransactionDate}}</p>
+            {{end}}
+            {{end}}
+        </div>
+    </div>
+
+    <script>
+
+        document.getElementById("homeBtn").addEventListener("click", () => {
+            window.location.href = "/"
+        })
+
+    </script>
 </body>
 
 </html>
