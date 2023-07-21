@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"html/template"
 	"math/rand"
 	"net/http"
 	"time"
@@ -9,28 +10,92 @@ import (
 	"github.com/gorilla/mux"
 )
 
+const (
+	Checking = "checking"
+	Savings  = "savings"
+)
+
+var indexTemplate *template.Template
+
+// Function to render the HTML template
+func renderHTMLTemplate(w http.ResponseWriter, tmpl *template.Template, data interface{}) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	tmpl.Execute(w, data)
+}
+
+// Handler for the index page (GET request)
+func IndexHandler(w http.ResponseWriter, r *http.Request) {
+	// You can pass any initial data to the template here (if needed)
+	data := struct {
+		User *User // Initial data (optional)
+	}{
+		User: nil, // Initial user data (set to nil initially)
+	}
+
+	// Render the HTML template with the initial data
+	renderHTMLTemplate(w, indexTemplate, data)
+}
+
 func (b *Bank) CreateUser(w http.ResponseWriter, r *http.Request) {
 
-	u := new(User)
-	json.NewDecoder(r.Body).Decode(u)
-	defer r.Body.Close()
+	// parse data from form
+	err := r.ParseForm()
+	if err != nil {
+		http.Error(w, "Failed to parse for data", http.StatusInternalServerError)
+		return
+	}
 
-	_, ok := b.Users[u.FirstName]
+	firstName := r.FormValue("firstName")
+	lastName := r.FormValue("lastName")
+
+	// u := new(User)
+	// json.NewDecoder(r.Body).Decode(u)
+	// defer r.Body.Close()
+
+	_, ok := b.Users[firstName]
 
 	if !ok {
-		u.Id = rand.Intn(1000)
-		u.BankNumber = rand.Intn(100000000)
-		u.CheckingBalance = 0
-		u.SavingsBalance = 0
-		u.CreatedAt = time.Now()
-		b.Users[u.FirstName] = u
+		// u := &User{
+		// 	Id:              rand.Intn(1000),
+		// 	FirstName:       firstName,
+		// 	LastName:        lastName,
+		// 	BankNumber:      rand.Intn(100000000),
+		// 	CheckingBalance: 0,
+		// 	SavingsBalance:  0,
+		// 	CreatedAt:       time.Now(),
+		// }
 
-		// b.Users = append(b.Users, u)
-		json.NewEncoder(w).Encode(b.Users)
-		return
+		// b.Users[u.FirstName] = u
+
+		// w.WriteHeader(http.StatusCreated)
+		// json.NewEncoder(w).Encode(u)
+		// return
+
+		newUser := &User{
+			// Assuming you have fields like Id, BankNumber, CheckingBalance, SavingsBalance, etc.
+			Id:              rand.Intn(1000),
+			BankNumber:      rand.Intn(100000000),
+			CheckingBalance: 0,
+			SavingsBalance:  0,
+			CreatedAt:       time.Now(),
+			FirstName:       firstName,
+			LastName:        lastName,
+		}
+
+		// Save the user data to the bank
+		b.Users[firstName] = newUser
+
+		// You can also pass the newly created user data to the template for display
+		data := struct {
+			User *User // New user data
+		}{
+			User: newUser,
+		}
+
+		renderHTMLTemplate(w, indexTemplate, data)
 
 	} else {
-		json.NewEncoder(w).Encode(map[string]string{"User Already Exists!": u.FirstName})
+		json.NewEncoder(w).Encode(map[string]string{"User Already Exists!": firstName})
 		return
 	}
 
@@ -54,6 +119,7 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
+	newTransaction.AccountType = Checking
 	newTransaction.TransactionType = "Deposit"
 	newTransaction.TransactionDate = time.Now()
 
@@ -82,6 +148,7 @@ func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
+	newTransaction.AccountType = Checking
 	newTransaction.TransactionType = "Deposit"
 	newTransaction.TransactionDate = time.Now()
 
@@ -110,6 +177,7 @@ func (b *Bank) WithdrawMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
+	newTransaction.AccountType = Savings
 	newTransaction.TransactionType = "Withdraw"
 	newTransaction.TransactionDate = time.Now()
 
@@ -139,6 +207,7 @@ func (b *Bank) WithdrawMoneySavings(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
+	newTransaction.AccountType = Savings
 	newTransaction.TransactionType = "Withdraw"
 	newTransaction.TransactionDate = time.Now()
 

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"html/template"
 	"log"
 	"math/rand"
 	"net/http"
@@ -44,19 +45,23 @@ func main() {
 	router := mux.NewRouter()
 	bank := CreateBank()
 
+	var err error
+	indexTemplate, err = template.ParseFiles("static/index.html")
+	if err != nil {
+		log.Fatal("Error parsing HTML template:", err)
+	}
+
+	router.HandleFunc("/", IndexHandler).Methods("GET")
+
 	router.Use(loggingMiddleware)
 	router.HandleFunc("/bank", bank.Details).Methods("GET")
-
 	router.HandleFunc("/create/user", bank.CreateUser).Methods("POST")
 	router.HandleFunc("/user/{name}", bank.PrintUser).Methods("GET")
 	router.HandleFunc("/user/statement/{name}", bank.ViewStatement).Methods("GET")
-
 	router.HandleFunc("/user/deposite/checking/{name}", bank.DepositeMoneyChecking).Methods("POST")
 	router.HandleFunc("/user/deposite/savings/{name}", bank.DepositeMoneySavings).Methods("POST")
-
 	router.HandleFunc("/user/withdraw/checking/{name}", bank.WithdrawMoneyChecking).Methods("POST")
 	router.HandleFunc("/user/withdraw/savings/{name}", bank.WithdrawMoneySavings).Methods("GET")
-
 	router.HandleFunc("/user/balance/{name}", bank.CheckBalance).Methods("GET")
 
 	// router.HandleFunc("/bank/teller/deposit", bank.DepositeMoney).Methods("POST")
