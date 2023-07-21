@@ -43,6 +43,7 @@ type User struct {
 type Statements struct {
 	Id                int       `json:"id"`
 	UID               int       `json:"uid"`
+	AccountType       string    `json:"accounttype:"`
 	TransactionType   string    `json:"transactiontype"`
 	TransactionAmount float32   `json:"transactionamount"`
 	TransactionDate   time.Time `json:"transactiondate"`

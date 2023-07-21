@@ -4,7 +4,7 @@
 <head>
     <title>Bank App</title>
     <!-- <link rel="stylesheet" type="text/css" href="/home/colby/goATM/static/styles.css"> -->
-
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <style>
         /* styles.css */
         body {
@@ -24,20 +24,46 @@
 </head>
 
 <body>
-    <h1>User Data</h1>
-    <p>First Name: {{.User.FirstName}}</p>
-    <p>Last Name: {{.User.LastName}}</p>
-    <p>Bank Number: {{.User.BankNumber}}</p>
-    <p>Checking Balance: {{.User.CheckingBalance}}</p>
-    <p>Savings Balance: {{.User.SavingsBalance}}</p>
-    <p>Created At: {{.User.CreatedAt}}</p>
+    <h1>Welcome to the Bank App</h1>
+    <p>This is the front-end of the bank application.</p>
 
-    <h2>Bank Statement:</h2>
-    <ul>
+    <form id="userForm" action="/create/user" method="post">
+        <label for="firstName">First Name:</label>
+        <input type="text" name="firstName" id="firstName" required>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" name="lastName" id="lastName" required>
+
+        <input type="submit" value="Create User">
+    </form>
+
+    <form id="LoginForm" action="/user/login" method="post">
+        <label for="firstNameLogin">First Name:</label>
+        <input type="text" name="firstName" id="firstNameLogin" required>
+
+        <input type="submit" value="LoginUser">
+    </form>
+
+
+    <div id="userInfo">
+        {{if .User}}
+        <p>User ID: {{.User.Id}}</p>
+        <p>First Name: {{.User.FirstName}}</p>
+        <p>Last Name: {{.User.LastName}}</p>
+        <p>Bank Number: {{.User.BankNumber}}</p>
+        <p>Checking Balance: {{.User.CheckingBalance}}</p>
+        <p>Savings Balance: {{.User.SavingsBalance}}</p>
+        <p>Created At: {{.User.CreatedAt}}</p>
+        <p>Bank: {{.Bank.Name}}</p>
+        <p>Checking Amount: {{.User.CheckingBalance}}</p>
+        <p>Savings Amount: {{.User.SavingsBalance}}</p>
         {{range .User.BankStatement}}
-        <li>Transaction Type: {{.TransactionType}}, Amount: {{.TransactionAmount}}, Date: {{.TransactionDate}}</li>
+        <p>Action: {{.TransactionType}}</p>
+        <p>Amount: {{.TransactionAmount}}</p>
+        <p>Time: {{.TransactionDate}}</p>
         {{end}}
-    </ul>
+        {{end}}
+    </div>
 </body>
 
 </html>
