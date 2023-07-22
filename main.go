@@ -46,7 +46,8 @@ func main() {
 	bank := CreateBank()
 
 	var err error
-	indexTemplate, err = template.ParseFiles("static/index.html")
+	// tmpl := template.Must(template.ParseFiles("static/index.html"))
+	indexTemplate = template.Must(template.ParseFiles("static/index.html"))
 	userTemplate, err = template.ParseFiles("static/user.html")
 	if err != nil {
 		log.Fatal("Error parsing HTML template:", err)

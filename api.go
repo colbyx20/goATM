@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -128,6 +130,18 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction := new(Statements)
 
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal("err :", err)
+	}
+
+	// err := r.FormValue("transactionType")
+	amountStr := r.FormValue("amount")
+	amount, err := strconv.Atoi(amountStr)
+	if err != nil {
+		fmt.Println("error")
+	}
+
 	// Decode incoming request from the r.Body
 	json.NewDecoder(r.Body).Decode(newTransaction)
 	defer r.Body.Close()
@@ -137,7 +151,7 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	newTransaction.AccountType = Checking
 	newTransaction.TransactionType = "Deposit"
 	newTransaction.TransactionDate = time.Now()
-
+	newTransaction.TransactionAmount = float32(amount)
 	u, ok := b.Users[name]
 
 	if ok {
@@ -157,6 +171,18 @@ func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction := new(Statements)
 
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal("err :", err)
+	}
+
+	// err := r.FormValue("transactionType")
+	amountStr := r.FormValue("amount")
+	amount, err := strconv.Atoi(amountStr)
+	if err != nil {
+		fmt.Println("error")
+	}
+
 	// Decode incoming request from the r.Body
 	json.NewDecoder(r.Body).Decode(newTransaction)
 	defer r.Body.Close()
@@ -166,6 +192,7 @@ func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
 	newTransaction.AccountType = Checking
 	newTransaction.TransactionType = "Deposit"
 	newTransaction.TransactionDate = time.Now()
+	newTransaction.TransactionAmount = float32(amount)
 
 	u, ok := b.Users[name]
 
@@ -184,6 +211,19 @@ func (b *Bank) WithdrawMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 
+	err := r.ParseForm()
+	if err != nil {
+		log.Fatal("err :", err)
+	}
+
+	// err := r.FormValue("transactionType")
+	amountStr := r.FormValue("amount")
+	amount, err := strconv.Atoi(amountStr)
+	if err != nil {
+		fmt.Println("error")
+	}
+	// checking := r.FormValue("checking")
+
 	newTransaction := new(Statements)
 
 	// Decode incoming request from the r.Body
@@ -192,15 +232,16 @@ func (b *Bank) WithdrawMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
-	newTransaction.AccountType = Savings
+	newTransaction.AccountType = "Checking"
 	newTransaction.TransactionType = "Withdraw"
 	newTransaction.TransactionDate = time.Now()
+	newTransaction.TransactionAmount = float32(amount)
 
 	// does user exists?
 	u, ok := b.Users[name]
 
 	if ok {
-		u.CheckingBalance -= newTransaction.TransactionAmount
+		u.CheckingBalance -= float32(amount)
 		u.BankStatement = append(u.BankStatement, newTransaction)
 		json.NewEncoder(w).Encode(&newTransaction)
 		return
@@ -270,6 +311,9 @@ func (b *Bank) PrintUser(w http.ResponseWriter, r *http.Request) {
 		for _, value := range data.Statements {
 			fmt.Println(value)
 		}
+
+		// indexTemplate = template.Must(template.ParseFiles("static/index.html"))
+		// indexTemplate.Execute(w,data)
 
 		renderHTMLTemplate(w, userTemplate, data)
 		return

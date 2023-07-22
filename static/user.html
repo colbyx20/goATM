@@ -88,11 +88,17 @@
     </div>
 
     <div class="transaction">
-        <p>Transaction</p>
-        <button type="radio">Withdraw</button>
-        <button type="radio">Deposit</button>
-        Amount: <input type="text" action="#" method="post" />
-
+        <div class="transaction">
+            <p>Transaction</p>
+            <form id="transactionForm">
+                <input type="radio" id="withdraw-tag" name="transactionType" value="withdraw" /> Withdraw <br />
+                <input type="radio" id="deposit-tag" name="transactionType" value="deposit" /> Deposit <br />
+                <input type="radio" id="checking-tag" name="checking" value="checking" /> Checking <br />
+                <input type="radio" id="savings-tag" name="savings" value="savings" /> Savings <br />
+                Amount: <input type="text" name="amount" id="amountInput" />
+                <input type="submit" id="submitBtn" value="Transaction">
+            </form>
+        </div>
     </div>
 
     <script>
@@ -109,6 +115,35 @@
             }, function () {
                 $("p").css("color", "black");
             });
+
+            // Handle radio button toggle behavior
+            $('input[type="radio"]').click(function () {
+                $('input[type="radio"]').not(this).prop('checked', false);
+            });
+
+            // Handle form submission
+            $('#transactionForm').submit((event) => {
+                event.preventDefault(); // Prevent default form submission behavior
+
+                const transactionType = $('input[name="transactionType"]:checked').val();
+                const amount = $('#amountInput').val();
+                const name = "colby"; // You need to replace this with the actual user name
+
+                // Perform AJAX request to the appropriate endpoint based on transactionType
+                if (transactionType === "withdraw") {
+                    // $.post(url, data, callback)
+                    $.post(`/user/withdraw/checking/${name}`, { amount }, (response) => {
+                        // Handle the response, e.g., display a success message or update the UI
+                        location.reload();
+                    });
+                } else if (transactionType === "deposit") {
+                    $.post(`/user/deposite/checking/${name}`, { amount }, (response) => {
+                        // Handle the response, e.g., display a success message or update the UI
+                        location.reload();
+                    });
+                }
+            });
+
         });
 
     </script>
