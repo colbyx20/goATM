@@ -29,19 +29,72 @@
 
         .row {
             display: flex;
+            width: 100%;
             border: 2px solid black;
+            z-index: -1;
         }
 
         .userInfo {
-            flex-grow: 40%;
+            flex-grow: 40;
             border: 2px solid black;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
         .statements {
-            flex-grow: 60%;
+            flex-grow: 60;
             border: 2px solid black;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .tableHead {
+            display: flex;
+            justify-content: center;
+        }
+
+        tr {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        table {
+            width: 100%
+        }
+
+        /* th {
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+        .trow {
+            display: flex;
+            justify-content: space-between;
+            width: 100%
+        } */
+
+        .container {
+            width: 50%;
+            margin: 0, auto;
+            justify-content: center;
+            height: 50%;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .modal {
+            display: flex;
+            justify-content: center;
+
+        }
+
+        /* .transaction {
+            display: flex
+        } */
+
+        .transactionHeading {
+            display: flex;
+            border: 2px solid black;
+            justify-content: center;
         }
     </style>
 
@@ -59,6 +112,30 @@
             <button class="toggleP">Funny</button>
         </div>
     </div>
+
+
+    <div class="modal">
+        <div class="container">
+            <div class="transaction">
+                <div class="transactionHeading">
+                    <p>Transaction</p>
+                </div>
+                <div class="transactionForm">
+                    <form id="transactionForm">
+                        <input type="radio" id="withdraw-tag" name="transactionType" value="withdraw" /> Withdraw <br />
+                        <input type="radio" id="deposit-tag" name="transactionType" value="deposit" /> Deposit <br />
+                        <input type="radio" id="checking-tag" name="checking" value="checking" /> Checking <br />
+                        <input type="radio" id="savings-tag" name="savings" value="savings" /> Savings <br />
+                        Amount: <input type="text" name="amount" id="amountInput" />
+                        <input type="submit" id="submitBtn" value="Transaction">
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
     <div class="row">
 
@@ -78,16 +155,36 @@
         </div>
 
         <div class="statements">
-            {{range .User.BankStatement}}
-            <p>Action: {{.TransactionType}}</p>
-            <p>Amount: {{.TransactionAmount}}</p>
-            <p>Time: {{.TransactionDate}}</p>
-            {{end}}
-            {{end}}
+            <div class="tableHead">
+                <h2>Monthly Statement</h2>
+            </div>
+            <div>
+
+                <table>
+
+                    <thead>
+                        <th>Action</th>
+                        <th>Amount</th>
+                        <th>Time</th>
+                    </thead>
+                    <tbody>
+
+                        {{range .User.BankStatement}}
+                        <tr>
+                            <td>{{.TransactionType}}</td>
+                            <td>{{.TransactionAmount}}</td>
+                            <td>{{.TransactionDate}}</td>
+                        </tr>
+                        {{end}}
+                        {{end}}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-    <div class="transaction">
+
+    <!-- <div class="transaction">
         <div class="transaction">
             <p>Transaction</p>
             <form id="transactionForm">
@@ -99,14 +196,20 @@
                 <input type="submit" id="submitBtn" value="Transaction">
             </form>
         </div>
-    </div>
+    </div> -->
+    <!-- <span class="res"></span> -->
+
 
     <script>
 
         $(document).ready(() => {
             // Add click event listener to toggle the visibility of <p> elements
             $(".toggleP").click(function () {
-                $("p").toggle();
+                $(".modal").toggle();
+            });
+
+            $("#submitBtn").click(function () {
+                $(".modal").toggle();
             });
 
             // Add hover event listener to change the color of .statements element
@@ -134,11 +237,13 @@
                     // $.post(url, data, callback)
                     $.post(`/user/withdraw/checking/${name}`, { amount }, (response) => {
                         // Handle the response, e.g., display a success message or update the UI
+                        // $(".res").html(response);
                         location.reload();
                     });
                 } else if (transactionType === "deposit") {
                     $.post(`/user/deposite/checking/${name}`, { amount }, (response) => {
                         // Handle the response, e.g., display a success message or update the UI
+                        // $(".res").html(response);
                         location.reload();
                     });
                 }

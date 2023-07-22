@@ -26,24 +26,32 @@ func CreateTeller() *Teller {
 	}
 }
 
-func (u *User) CreateStatement() {
+// func (u *User) CreateStatement() {
 
-	Statement := &Statements{
-		Id:                rand.Intn(10000),
-		UID:               u.Id,
-		TransactionAmount: 200,
-		TransactionDate:   time.Now(),
-	}
+// 	Statement := &Statements{
+// 		Id:                rand.Intn(10000),
+// 		UID:               u.Id,
+// 		TransactionAmount: 200,
+// 		TransactionDate:   time.Now(),
+// 	}
 
-	u.CheckingBalance += Statement.TransactionAmount
-	u.BankStatement = append(u.BankStatement, Statement)
+// 	u.CheckingBalance += Statement.TransactionAmount
+// 	u.BankStatement = append(u.BankStatement, Statement)
 
-}
+// }
 
 func main() {
 
 	router := mux.NewRouter()
 	bank := CreateBank()
+
+	bank.Users["colby"] = &User{
+		Id:         1,
+		FirstName:  "colby",
+		LastName:   "berger",
+		BankNumber: 222,
+		CreatedAt:  time.Now(),
+	}
 
 	var err error
 	// tmpl := template.Must(template.ParseFiles("static/index.html"))

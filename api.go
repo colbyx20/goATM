@@ -150,7 +150,7 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = Checking
 	newTransaction.TransactionType = "Deposit"
-	newTransaction.TransactionDate = time.Now()
+	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
 	newTransaction.TransactionAmount = float32(amount)
 	u, ok := b.Users[name]
 
@@ -191,7 +191,7 @@ func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = Checking
 	newTransaction.TransactionType = "Deposit"
-	newTransaction.TransactionDate = time.Now()
+	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
 	newTransaction.TransactionAmount = float32(amount)
 
 	u, ok := b.Users[name]
@@ -234,7 +234,7 @@ func (b *Bank) WithdrawMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = "Checking"
 	newTransaction.TransactionType = "Withdraw"
-	newTransaction.TransactionDate = time.Now()
+	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
 	newTransaction.TransactionAmount = float32(amount)
 
 	// does user exists?
@@ -265,7 +265,7 @@ func (b *Bank) WithdrawMoneySavings(w http.ResponseWriter, r *http.Request) {
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = Savings
 	newTransaction.TransactionType = "Withdraw"
-	newTransaction.TransactionDate = time.Now()
+	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
 
 	// does user exists?
 	u, ok := b.Users[name]
