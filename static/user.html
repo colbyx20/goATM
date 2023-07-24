@@ -74,7 +74,8 @@
 
         .container {
             width: 50%;
-            margin: 0, auto;
+            /* display: flex; */
+            margin: 0;
             justify-content: center;
             height: 50%;
             position: absolute;
@@ -82,8 +83,11 @@
         }
 
         .modal {
-            display: flex;
-            justify-content: center;
+            display: none;
+            margin-left: 35%;
+            /* margin-right: 50%; */
+            /* display: flex; */
+            /* justify-content: center; */
 
         }
 
@@ -93,6 +97,7 @@
 
         .transactionHeading {
             display: flex;
+            width: 100%;
             border: 2px solid black;
             justify-content: center;
         }
@@ -121,13 +126,11 @@
                     <p>Transaction</p>
                 </div>
                 <div class="transactionForm">
-                    <form id="transactionForm">
-                        <input type="radio" id="withdraw-tag" name="transactionType" value="withdraw" /> Withdraw <br />
+                    <form id="transactionForm" action="" method="POST">
+                        <input type="radio" id="withdraw-tag" name="transactionType" value="withdraw" /> Withdraw
                         <input type="radio" id="deposit-tag" name="transactionType" value="deposit" /> Deposit <br />
-                        <input type="radio" id="checking-tag" name="checking" value="checking" /> Checking <br />
-                        <input type="radio" id="savings-tag" name="savings" value="savings" /> Savings <br />
-                        Amount: <input type="text" name="amount" id="amountInput" />
-                        <input type="submit" id="submitBtn" value="Transaction">
+                        Amount: <input type="text" name="amount" id="amountInput" /><br />
+                        <input type="submit" id="submitBtn" name="checking" value="checking" />
                     </form>
                 </div>
             </div>
@@ -184,22 +187,6 @@
     </div>
 
 
-    <!-- <div class="transaction">
-        <div class="transaction">
-            <p>Transaction</p>
-            <form id="transactionForm">
-                <input type="radio" id="withdraw-tag" name="transactionType" value="withdraw" /> Withdraw <br />
-                <input type="radio" id="deposit-tag" name="transactionType" value="deposit" /> Deposit <br />
-                <input type="radio" id="checking-tag" name="checking" value="checking" /> Checking <br />
-                <input type="radio" id="savings-tag" name="savings" value="savings" /> Savings <br />
-                Amount: <input type="text" name="amount" id="amountInput" />
-                <input type="submit" id="submitBtn" value="Transaction">
-            </form>
-        </div>
-    </div> -->
-    <!-- <span class="res"></span> -->
-
-
     <script>
 
         $(document).ready(() => {
@@ -208,9 +195,20 @@
                 $(".modal").toggle();
             });
 
+            $("table").css("overflow", "scroll")
+
             $("#submitBtn").click(function () {
                 $(".modal").toggle();
             });
+            $("#submitSavings").click(function () {
+                $(".modal").toggle();
+            });
+
+            $(document).keypress((event) => {
+                if (event.which === 13) {
+                    $(".modal").toggle();
+                }
+            })
 
             // Add hover event listener to change the color of .statements element
             $("p").hover(function () {
@@ -224,30 +222,31 @@
                 $('input[type="radio"]').not(this).prop('checked', false);
             });
 
-            // Handle form submission
-            $('#transactionForm').submit((event) => {
+            // Function to handle form submission
+            function handleFormSubmit(event) {
                 event.preventDefault(); // Prevent default form submission behavior
-
                 const transactionType = $('input[name="transactionType"]:checked').val();
                 const amount = $('#amountInput').val();
-                const name = "colby"; // You need to replace this with the actual user name
+                const name = "{{.User.FirstName}}"; // Replace this with your Go template tag
 
-                // Perform AJAX request to the appropriate endpoint based on transactionType
+                // Check the selected transaction type and construct the API URL accordingly
+                let apiUrl = "";
                 if (transactionType === "withdraw") {
-                    // $.post(url, data, callback)
-                    $.post(`/user/withdraw/checking/${name}`, { amount }, (response) => {
-                        // Handle the response, e.g., display a success message or update the UI
-                        // $(".res").html(response);
-                        location.reload();
-                    });
+                    apiUrl = `/user/withdraw/checking/${name}`;
                 } else if (transactionType === "deposit") {
-                    $.post(`/user/deposite/checking/${name}`, { amount }, (response) => {
-                        // Handle the response, e.g., display a success message or update the UI
-                        // $(".res").html(response);
-                        location.reload();
-                    });
+                    apiUrl = `/user/deposite/checking/${name}`;
                 }
-            });
+
+                // Update the form's action attribute with the appropriate URL
+                $("#transactionForm").attr("action", apiUrl);
+
+                // Submit the form
+                $("#transactionForm").off("submit", handleFormSubmit); // Remove the event listener to avoid recursion
+                $("#transactionForm")[0].submit();
+            }
+
+            // Add an event listener to the form submission
+            $("#transactionForm").submit(handleFormSubmit);
 
         });
 
