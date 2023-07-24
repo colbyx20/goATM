@@ -71,10 +71,10 @@ func main() {
 	router.HandleFunc("/create/user", bank.CreateUser).Methods("POST")
 	router.HandleFunc("/user/login", bank.PrintUser).Methods("POST")
 	router.HandleFunc("/user/statement/{name}", bank.ViewStatement).Methods("GET")
-	router.HandleFunc("/user/deposite/checking/{name}", bank.DepositeMoneyChecking).Methods("POST")
-	router.HandleFunc("/user/deposite/savings/{name}", bank.DepositeMoneySavings).Methods("POST")
+	router.HandleFunc("/user/deposit/checking/{name}", bank.DepositeMoneyChecking).Methods("POST")
+	router.HandleFunc("/user/deposit/savings/{name}", bank.DepositeMoneySavings).Methods("POST")
 	router.HandleFunc("/user/withdraw/checking/{name}", bank.WithdrawMoneyChecking).Methods("POST")
-	router.HandleFunc("/user/withdraw/savings/{name}", bank.WithdrawMoneySavings).Methods("GET")
+	router.HandleFunc("/user/withdraw/savings/{name}", bank.WithdrawMoneySavings).Methods("POST")
 	router.HandleFunc("/user/balance/{name}", bank.CheckBalance).Methods("GET")
 
 	// router.HandleFunc("/bank/teller/deposit", bank.DepositeMoney).Methods("POST")
