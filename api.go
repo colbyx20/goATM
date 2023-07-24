@@ -27,6 +27,17 @@ func renderHTMLTemplate(w http.ResponseWriter, tmpl *template.Template, data int
 	tmpl.Execute(w, data)
 }
 
+// Function to render the "LoggedInHandler" page with the updated data
+func renderLoggedInHandler(w http.ResponseWriter, r *http.Request, b *Bank, user *User) {
+	data := struct {
+		User *User // User data
+	}{
+		User: user,
+	}
+
+	renderHTMLTemplate(w, userTemplate, data)
+}
+
 // Handler for the index page (GET request)
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// You can pass any initial data to the template here (if needed)
@@ -128,6 +139,7 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 
+	fmt.Println("Name: ", name)
 	newTransaction := new(Statements)
 
 	err := r.ParseForm()
@@ -154,10 +166,23 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	newTransaction.TransactionAmount = float32(amount)
 	u, ok := b.Users[name]
 
+	fmt.Println("myTransaction:", newTransaction)
+
 	if ok {
 		u.CheckingBalance += newTransaction.TransactionAmount
 		u.BankStatement = append(u.BankStatement, newTransaction)
-		json.NewEncoder(w).Encode(&newTransaction)
+
+		data := struct {
+			User       *User // New user data
+			Bank       *Bank
+			Statements []*Statements
+		}{
+			User:       u,
+			Bank:       b,
+			Statements: u.BankStatement,
+		}
+
+		renderHTMLTemplate(w, userTemplate, data)
 		return
 	} else {
 		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
@@ -243,7 +268,20 @@ func (b *Bank) WithdrawMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		u.CheckingBalance -= float32(amount)
 		u.BankStatement = append(u.BankStatement, newTransaction)
-		json.NewEncoder(w).Encode(&newTransaction)
+
+		// json.NewEncoder(w).Encode(&newTransaction)
+		data := struct {
+			User       *User // New user data
+			Bank       *Bank
+			Statements []*Statements
+		}{
+			User:       u,
+			Bank:       b,
+			Statements: u.BankStatement,
+		}
+
+		renderHTMLTemplate(w, userTemplate, data)
+
 		return
 	} else {
 		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
@@ -306,10 +344,6 @@ func (b *Bank) PrintUser(w http.ResponseWriter, r *http.Request) {
 			User:       user,
 			Bank:       b,
 			Statements: user.BankStatement,
-		}
-
-		for _, value := range data.Statements {
-			fmt.Println(value)
 		}
 
 		// indexTemplate = template.Must(template.ParseFiles("static/index.html"))
