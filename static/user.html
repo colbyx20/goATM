@@ -60,21 +60,8 @@
             width: 100%
         }
 
-        /* th {
-            display: flex;
-            justify-content: space-between;
-        }
-
-
-        .trow {
-            display: flex;
-            justify-content: space-between;
-            width: 100%
-        } */
-
         .container {
             width: 50%;
-            /* display: flex; */
             margin: 0;
             justify-content: center;
             height: 50%;
@@ -85,21 +72,17 @@
         .modal {
             display: none;
             margin-left: 35%;
-            /* margin-right: 50%; */
-            /* display: flex; */
-            /* justify-content: center; */
-
         }
-
-        /* .transaction {
-            display: flex
-        } */
 
         .transactionHeading {
             display: flex;
             width: 100%;
             border: 2px solid black;
             justify-content: center;
+        }
+
+        #submitBtn {
+            padding-top: 5px;
         }
     </style>
 
@@ -114,7 +97,7 @@
             <a href="#">Home</a>
             <a href="#">BankStatement</a>
             <a href="/">Logout</a>
-            <button class="toggleP">Funny</button>
+            <button class="toggleP">Transaction</button>
         </div>
     </div>
 
@@ -129,16 +112,15 @@
                     <form id="transactionForm" action="" method="POST">
                         <input type="radio" id="withdraw-tag" name="transactionType" value="withdraw" /> Withdraw
                         <input type="radio" id="deposit-tag" name="transactionType" value="deposit" /> Deposit <br />
-                        Amount: <input type="text" name="amount" id="amountInput" /><br />
+                        Amount: <input type="text" name="amount" id="amountInput" />
+                        <input type="checkbox" name="checking" value="checking" /> Checking
+                        <input type="checkbox" name="savings" value="savings" /> Savings <br />
                         <input type="submit" id="submitBtn" name="checking" value="checking" />
                     </form>
                 </div>
             </div>
         </div>
     </div>
-
-
-
 
     <div class="row">
 
@@ -229,12 +211,24 @@
                 const amount = $('#amountInput').val();
                 const name = "{{.User.FirstName}}"; // Replace this with your Go template tag
 
-                // Check the selected transaction type and construct the API URL accordingly
+                // Checkboxes for checking and savings accounts
+                const checkingAccount = $('input[name="checking"]').is(":checked");
+                const savingsAccount = $('input[name="savings"]').is(":checked");
+
+                // Construct the API URL based on the selected transaction type and account
                 let apiUrl = "";
                 if (transactionType === "withdraw") {
-                    apiUrl = `/user/withdraw/checking/${name}`;
+                    if (checkingAccount) {
+                        apiUrl = `/user/withdraw/checking/${name}`;
+                    } else if (savingsAccount) {
+                        apiUrl = `/user/withdraw/savings/${name}`;
+                    }
                 } else if (transactionType === "deposit") {
-                    apiUrl = `/user/deposite/checking/${name}`;
+                    if (checkingAccount) {
+                        apiUrl = `/user/deposit/checking/${name}`;
+                    } else if (savingsAccount) {
+                        apiUrl = `/user/deposit/savings/${name}`;
+                    }
                 }
 
                 // Update the form's action attribute with the appropriate URL

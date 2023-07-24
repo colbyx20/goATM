@@ -166,8 +166,6 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	newTransaction.TransactionAmount = float32(amount)
 	u, ok := b.Users[name]
 
-	fmt.Println("myTransaction:", newTransaction)
-
 	if ok {
 		u.CheckingBalance += newTransaction.TransactionAmount
 		u.BankStatement = append(u.BankStatement, newTransaction)
@@ -224,7 +222,23 @@ func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
 	if ok {
 		u.SavingsBalance += newTransaction.TransactionAmount
 		u.BankStatement = append(u.BankStatement, newTransaction)
-		json.NewEncoder(w).Encode(&newTransaction)
+
+		data := struct {
+			User       *User // New user data
+			Bank       *Bank
+			Statements []*Statements
+		}{
+			User:       u,
+			Bank:       b,
+			Statements: u.BankStatement,
+		}
+
+		// indexTemplate = template.Must(template.ParseFiles("static/index.html"))
+		// indexTemplate.Execute(w,data)
+
+		renderHTMLTemplate(w, userTemplate, data)
+
+		// json.NewEncoder(w).Encode(&newTransaction)
 		return
 	} else {
 		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
@@ -295,6 +309,12 @@ func (b *Bank) WithdrawMoneySavings(w http.ResponseWriter, r *http.Request) {
 
 	newTransaction := new(Statements)
 
+	amountStr := r.FormValue("amount")
+	amount, err := strconv.Atoi(amountStr)
+	if err != nil {
+		fmt.Println("error")
+	}
+
 	// Decode incoming request from the r.Body
 	json.NewDecoder(r.Body).Decode(newTransaction)
 	defer r.Body.Close()
@@ -304,14 +324,31 @@ func (b *Bank) WithdrawMoneySavings(w http.ResponseWriter, r *http.Request) {
 	newTransaction.AccountType = Savings
 	newTransaction.TransactionType = "Withdraw"
 	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
+	newTransaction.TransactionAmount = float32(amount)
 
 	// does user exists?
 	u, ok := b.Users[name]
 
 	if ok {
-		u.SavingsBalance -= newTransaction.TransactionAmount
+		u.SavingsBalance -= float32(amount)
 		u.BankStatement = append(u.BankStatement, newTransaction)
-		json.NewEncoder(w).Encode(&newTransaction)
+
+		data := struct {
+			User       *User // New user data
+			Bank       *Bank
+			Statements []*Statements
+		}{
+			User:       u,
+			Bank:       b,
+			Statements: u.BankStatement,
+		}
+
+		// indexTemplate = template.Must(template.ParseFiles("static/index.html"))
+		// indexTemplate.Execute(w,data)
+
+		renderHTMLTemplate(w, userTemplate, data)
+
+		// json.NewEncoder(w).Encode(&newTransaction)
 		return
 	} else {
 		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
