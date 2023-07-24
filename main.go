@@ -56,6 +56,10 @@ func main() {
 	var err error
 	// tmpl := template.Must(template.ParseFiles("static/index.html"))
 	indexTemplate = template.Must(template.ParseFiles("static/index.html"))
+	if err != nil {
+		log.Fatal("Error parsing HTML template:", err)
+	}
+
 	userTemplate, err = template.ParseFiles("static/user.html")
 	if err != nil {
 		log.Fatal("Error parsing HTML template:", err)

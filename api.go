@@ -76,28 +76,9 @@ func (b *Bank) CreateUser(w http.ResponseWriter, r *http.Request) {
 	firstName := r.FormValue("firstName")
 	lastName := r.FormValue("lastName")
 
-	// u := new(User)
-	// json.NewDecoder(r.Body).Decode(u)
-	// defer r.Body.Close()
-
 	_, ok := b.Users[firstName]
 
 	if !ok {
-		// u := &User{
-		// 	Id:              rand.Intn(1000),
-		// 	FirstName:       firstName,
-		// 	LastName:        lastName,
-		// 	BankNumber:      rand.Intn(100000000),
-		// 	CheckingBalance: 0,
-		// 	SavingsBalance:  0,
-		// 	CreatedAt:       time.Now(),
-		// }
-
-		// b.Users[u.FirstName] = u
-
-		// w.WriteHeader(http.StatusCreated)
-		// json.NewEncoder(w).Encode(u)
-		// return
 
 		newUser := &User{
 			// Assuming you have fields like Id, BankNumber, CheckingBalance, SavingsBalance, etc.
@@ -147,7 +128,6 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("err :", err)
 	}
 
-	// err := r.FormValue("transactionType")
 	amountStr := r.FormValue("amount")
 	amount, err := strconv.Atoi(amountStr)
 	if err != nil {
@@ -161,7 +141,7 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = Checking
-	newTransaction.TransactionType = "Deposit"
+	newTransaction.TransactionType = "Deposit - Checking"
 	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
 	newTransaction.TransactionAmount = float32(amount)
 	u, ok := b.Users[name]
@@ -213,7 +193,7 @@ func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = Checking
-	newTransaction.TransactionType = "Deposit"
+	newTransaction.TransactionType = "Deposit - Savings"
 	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
 	newTransaction.TransactionAmount = float32(amount)
 
@@ -272,7 +252,7 @@ func (b *Bank) WithdrawMoneyChecking(w http.ResponseWriter, r *http.Request) {
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = "Checking"
-	newTransaction.TransactionType = "Withdraw"
+	newTransaction.TransactionType = "Withdraw - Checking"
 	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
 	newTransaction.TransactionAmount = float32(amount)
 
@@ -322,8 +302,8 @@ func (b *Bank) WithdrawMoneySavings(w http.ResponseWriter, r *http.Request) {
 	newTransaction.Id = rand.Intn(10000)
 	newTransaction.UID = b.Users[name].Id
 	newTransaction.AccountType = Savings
-	newTransaction.TransactionType = "Withdraw"
-	newTransaction.TransactionDate = time.Now().Format("2023-01-01")
+	newTransaction.TransactionType = "Withdraw - Savings"
+	newTransaction.TransactionDate = time.Now().Format("01-01-1972")
 	newTransaction.TransactionAmount = float32(amount)
 
 	// does user exists?
