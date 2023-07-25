@@ -120,7 +120,6 @@ func (b *Bank) DepositeMoneyChecking(w http.ResponseWriter, r *http.Request) {
 
 	name := mux.Vars(r)["name"]
 
-	fmt.Println("Name: ", name)
 	newTransaction := new(Statements)
 
 	err := r.ParseForm()
