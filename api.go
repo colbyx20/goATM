@@ -403,8 +403,50 @@ func (b *Bank) CheckBalance(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func (b *Bank) TransferMoney(w http.ResponseWriter, r *http.Request) {
+func (b *Bank) MakeTransfer(w http.ResponseWriter, r *http.Request) {
+	// post request
+	// grab body data
+	err := r.ParseForm()
+	newTransaction := new(Statements)
+	name := mux.Vars(r)["name"]
 
-	w.WriteHeader(http.StatusOK) // send 200
-	json.NewEncoder(w).Encode("HI;lkj;LKj")
+	amountStr := r.FormValue("amount")
+	amount, err := strconv.Atoi(amountStr)
+	fmt.Println(name)
+	fmt.Println(amount)
+
+	if err != nil {
+		fmt.Println("error")
+	}
+
+	// Decode incoming request from the r.Body
+	json.NewDecoder(r.Body).Decode(newTransaction)
+	defer r.Body.Close()
+
+	user, ok := b.Users["colby"]
+
+	if ok {
+		newTransaction.Id = rand.Intn(10000)
+		newTransaction.UID = b.Users[name].Id
+		newTransaction.AccountType = Savings
+		newTransaction.TransactionType = "Transaction"
+		newTransaction.TransactionDate = time.Now().Format("01-01-1972")
+		newTransaction.TransactionAmount = float32(amount)
+
+		data := struct {
+			User       *User // New user data
+			Bank       *Bank
+			Statements []*Statements
+		}{
+			User:       user,
+			Bank:       b,
+			Statements: user.BankStatement,
+		}
+
+		// indexTemplate = template.Must(template.ParseFiles("static/index.html"))
+		// indexTemplate.Execute(w,data)
+
+		renderHTMLTemplate(w, userTemplate, data)
+
+	}
 }

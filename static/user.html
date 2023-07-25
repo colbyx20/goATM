@@ -211,6 +211,21 @@
         .transferaction {
             display: hidden;
         }
+
+        .transferForm {
+            padding: 5px;
+            margin: 5px;
+        }
+
+        #amountTransfer {
+            padding: 5px;
+            width: 40%;
+        }
+
+        .performTransfer {
+            padding: 5px;
+            width: 20%;
+        }
     </style>
 
 
@@ -265,8 +280,12 @@
                 <select names="transaction">
                     <option value="checking">Checking</option>
                     <option value="savings">Savings</option>
-                </select>
+                </select><br />
             </div>
+            <form class="transferForm" action="/user/transfer/colby" method="POST">
+                Amount: <input type="text" name="amount" id="amountTransfer" />
+                <button class="performTransfer">Transfer</button>
+            </form>
         </div>
 
         <div class="statements">

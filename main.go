@@ -26,20 +26,6 @@ func CreateTeller() *Teller {
 	}
 }
 
-// func (u *User) CreateStatement() {
-
-// 	Statement := &Statements{
-// 		Id:                rand.Intn(10000),
-// 		UID:               u.Id,
-// 		TransactionAmount: 200,
-// 		TransactionDate:   time.Now(),
-// 	}
-
-// 	u.CheckingBalance += Statement.TransactionAmount
-// 	u.BankStatement = append(u.BankStatement, Statement)
-
-// }
-
 func main() {
 
 	router := mux.NewRouter()
@@ -80,6 +66,7 @@ func main() {
 	router.HandleFunc("/user/withdraw/checking/{name}", bank.WithdrawMoneyChecking).Methods("POST")
 	router.HandleFunc("/user/withdraw/savings/{name}", bank.WithdrawMoneySavings).Methods("POST")
 	router.HandleFunc("/user/balance/{name}", bank.CheckBalance).Methods("GET")
+	router.HandleFunc("/user/transfer/{name}", bank.MakeTransfer).Methods("POST")
 
 	// router.HandleFunc("/bank/teller/deposit", bank.DepositeMoney).Methods("POST")
 	// router.HandleFunc("/bank/teller/withdraw", bank.WithdrawMoney).Methods("POST")

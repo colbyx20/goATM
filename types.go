@@ -22,11 +22,9 @@ type TellerInf interface {
 }
 
 type Bank struct {
-	Id   int    `json:"id"`
-	Name string `json:"bankname"`
-	// Users  []*User         `json:"users"`
+	Id    int              `json:"id"`
+	Name  string           `json:"bankname"`
 	Users map[string]*User `json:"users"`
-	// Teller map[int]*Teller  `json:"teller"`
 }
 
 type User struct {
