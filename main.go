@@ -68,11 +68,6 @@ func main() {
 	router.HandleFunc("/user/balance/{name}", bank.CheckBalance).Methods("GET")
 	router.HandleFunc("/user/transfer/{name}", bank.MakeTransfer).Methods("POST")
 
-	// router.HandleFunc("/bank/teller/deposit", bank.DepositeMoney).Methods("POST")
-	// router.HandleFunc("/bank/teller/withdraw", bank.WithdrawMoney).Methods("POST")
-	// router.HandleFunc("/bank/teller/balance", bank.CheckBalance).Methods("GET")
-	// router.HandleFunc("/bank/teller/transfer", bank.TransferMoney).Methods("POST")
-
 	http.ListenAndServe(":4000", router)
 
 }
