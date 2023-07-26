@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bank App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: white;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .title {
+            padding: 10px;
+            display: flex;
+            justify-content: flex-start;
+            color: #2141e1;
+            font: xx-large;
+            margin: auto;
+
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: flex-start;
+            padding: 0;
+            margin: 0;
+            background-color: #2141e1;
+        }
+
+        .navbar a {
+            text-decoration: none;
+            color: white;
+            padding: 14px 20px;
+            text-align: center;
+            width: 10%;
+            margin: 0;
+        }
+
+        .navbar a:hover {
+            background-color: #f0f0f0;
+            color: black;
+        }
+
+        .create-user {
+            /* border: 2px black; */
+            margin: 5px;
+            padding: 2px;
+        }
+
+        input {
+            border-radius: 4px;
+        }
+
+        .row-1 {
+            display: flex;
+            gap: 7rem;
+        }
+
+        .row-2 {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .create-user-btn {
+            width: 8%;
+            padding: 4px;
+            background-color: #2141e1;
+            color: white;
+            border-radius: 5px;
+            font-size: medium;
+        }
+
+        .create-user-btn:hover {
+            background-color: #405ffb;
+            font-size: large;
+        }
+
+        .login-form {
+            margin: 5px;
+            padding: 2px;
+        }
+
+        .login-form>input {
+            padding: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="title">
+        <h1>FairWinds LLC</h1>
+    </div>
+
+    <nav class="navbar">
+        <a href="#">About Page</a>
+        <a href="#">Home Page</a>
+        <a href="#">Create Account</a>
+    </nav>
+
+    <div class="create-user">
+        <form id="userForm" action="/create/user" method="post">
+            <div class="row-1">
+                <label for="firstName">First Name</label>
+                <label for="lastName">Last Name</label>
+            </div>
+            <div class="row-2">
+                <input type="text" name="firstName" id="firstName" required>
+                <input type="text" name="lastName" id="lastName" required>
+                <button class="create-user-btn" type="submit" value="Create User">Submit</button>
+            </div>
+
+
+        </form>
+    </div>
+    <div class="login-form">
+        <form id="LoginForm" action="/user/login" method="post">
+            <label for="firstNameLogin">First Name</label><br />
+            <input type="text" name="firstName" id="firstNameLogin" required>
+
+            <input type="submit" value="LoginUser">
+        </form>
+    </div>
+
+
+    <div id="userInfo">
+        {{if .User}}
+        <p>User ID: {{.User.Id}}</p>
+        <p>First Name: {{.User.FirstName}}</p>
+        <p>Last Name: {{.User.LastName}}</p>
+        <p>Bank Number: {{.User.BankNumber}}</p>
+        <p>Checking Balance: {{.User.CheckingBalance}}</p>
+        <p>Savings Balance: {{.User.SavingsBalance}}</p>
+        <p>Created At: {{.User.CreatedAt}}</p>
+        <p>Bank: {{.Bank.Name}}</p>
+        <p>Checking Amount: {{.User.CheckingBalance}}</p>
+        <p>Savings Amount: {{.User.SavingsBalance}}</p>
+        {{range .User.BankStatement}}
+        <p>Action: {{.TransactionType}}</p>
+        <p>Amount: {{.TransactionAmount}}</p>
+        <p>Time: {{.TransactionDate}}</p>
+        {{end}}
+        {{end}}
+    </div>
+</body>
+
+</html>

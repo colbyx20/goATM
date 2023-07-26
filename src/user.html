@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bank App</title>
+    <!-- <link rel="stylesheet" type="text/css" href="/home/colby/goATM/static/styles.css"> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        /* styles.css */
+        body {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: rgb(255, 248, 248);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 5);
+        }
+
+        .navbar {
+            display: flex;
+            margin: 0;
+            padding: 0;
+            justify-content: space-between;
+            background-color: #575757;
+            font-size: x-large;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .navbar a {
+            color: white;
+            padding: 14px 20px;
+            text-decoration: none;
+            text-align: center;
+            width: 100%;
+        }
+
+        .navbar a:hover {
+            background-color: #84affa;
+            color: black;
+        }
+
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            width: 100%;
+            /* border: 2px solid black; */
+            z-index: -1;
+            height: 760px;
+        }
+
+        .userInfo {
+            flex-grow: 20;
+            border: 2px solid black;
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+        }
+
+        .statements {
+            flex-grow: 80;
+            border: 2px solid black;
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); */
+        }
+
+        .tableHead {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3px;
+            background-color: #2141e1;
+            color: white;
+            font-size: xx-large;
+            margin: 0;
+        }
+
+        tr {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+
+        }
+
+        tr:nth-child(odd) {
+            background-color: #dfdfdf;
+        }
+
+        tr:hover {
+            background-color: #2141e1;
+            color: white;
+            font-size: large;
+        }
+
+        table {
+            width: 100%
+        }
+
+        thead {
+            padding: 8px;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0;
+            justify-content: center;
+            height: 40%;
+            position: absolute;
+            z-index: 1;
+        }
+
+        .modal {
+            display: none;
+            margin-left: 35%;
+            /* box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); */
+        }
+
+        .transactionHeading {
+            background-color: #2141e1;
+            color: white;
+            font-size: large;
+            display: flex;
+            width: 100%;
+            justify-content: center;
+
+        }
+
+        #submitBtn {
+            margin-top: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            padding: 5px;
+            width: 30%;
+        }
+
+        .footer {
+            display: flex;
+            justify-content: center;
+            height: 100%;
+            background-color: #2141e1;
+            color: white;
+            /* align-items: center; */
+
+        }
+
+        .llc {
+            justify-content: center;
+        }
+
+        .bankNumber {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 11px;
+            background-color: #2141e1;
+            color: white;
+            font-size: larger;
+        }
+
+        .transactionForm {
+            margin: 5px;
+        }
+
+        .account-value {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: white;
+            color: blue;
+            font-size: large;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 2);
+
+        }
+
+        .makeTransfer {
+            display: flex;
+            margin: 0;
+            padding: 1px;
+            background-color: #2141e1;
+            color: white;
+            justify-content: center;
+            font-size: xx-large;
+            box-shadow: 0 0 10px rgba(0, 0, 0, .5);
+
+        }
+
+        .makeTransfer:hover {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 2);
+        }
+
+        .transferaction {
+            display: flex;
+        }
+
+        select {
+            padding: 20px;
+            margin: 10px;
+            width: 100%;
+            font-size: medium;
+        }
+
+        .transferaction {
+            display: hidden;
+        }
+
+        .transferForm {
+            padding: 5px;
+            margin: 5px;
+        }
+
+        #amountTransfer {
+            padding: 5px;
+            width: 40%;
+        }
+
+        .performTransfer {
+            padding: 5px;
+            width: 20%;
+        }
+    </style>
+
+
+</head>
+
+<body>
+    <h1>{{.Bank.Name}} Bank - {{.User.FirstName}} {{.User.LastName}}</h1>
+
+    <div class="navbar">
+        <a class="navButton" href="#">Home</a>
+        <a class="navButton" href="#">BankStatement</a>
+        <a class="toggleP">Transaction</a>
+        <a class="navButton" href="/">Logout</a>
+    </div>
+
+
+    <div class="modal">
+        <div class="container">
+            <div class="transaction">
+                <div class="transactionHeading">
+                    <p>Transaction</p>
+                </div>
+                <div class="transactionForm">
+                    <form id="transactionForm" action="" method="POST">
+                        <input type="radio" id="withdraw-tag" name="transactionType" value="withdraw" />
+                        Withdraw
+                        <input type="radio" id="deposit-tag" name="transactionType" value="deposit" /> Deposit
+                        <br />
+                        Amount: <input type="text" name="amount" id="amountInput" />
+                        <input type="checkbox" name="checking" value="checking" /> Checking
+                        <input type="checkbox" name="savings" value="savings" /> Savings <br />
+                        <input type="submit" id="submitBtn" name="checking" value="checking" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="userInfo">
+            {{if .User}}
+            <div class="bankNumber">Bank Number: {{.User.BankNumber}}</div>
+            <div class="account-value">
+                <div>Checking Balance: {{.User.CheckingBalance}}</div>
+                <div>Savings Balance: {{.User.SavingsBalance}}</div>
+            </div>
+            <div class="makeTransfer">
+                <a>Make a Transfer</a>
+            </div>
+            <div class="transferaction">
+                <select names="transaction">
+                    <option value="checking">Checking</option>
+                    <option value="savings">Savings</option>
+                </select><br />
+            </div>
+            <form class="transferForm" action="/user/transfer/colby" method="POST">
+                Amount: <input type="text" name="amount" id="amountTransfer" />
+                <button class="performTransfer">Transfer</button>
+            </form>
+        </div>
+
+        <div class="statements">
+            <div class="tableHead">
+                <div>Monthly Statement</div>
+            </div>
+            <div>
+
+                <table>
+                    <div>
+                        <th>Action</th>
+                        <th>Amount</th>
+                        <th>Time</th>
+                    </div>
+                    <div>
+                        <tbody>
+
+                            {{range .User.BankStatement}}
+                            <tr>
+                                <td>{{.TransactionType}}</td>
+                                <td>{{.TransactionAmount}}</td>
+                                <td>{{.TransactionDate}}</td>
+                            </tr>
+                            {{end}}
+                            {{end}}
+                        </tbody>
+                    </div>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="footer">
+        <div class="llc">
+            <h2>FairWinds LLC</h2>
+        </div>
+    </div>
+
+
+
+    <script>
+
+        $(document).ready(() => {
+            // Add click event listener to toggle the visibility of <p> elements
+            $(".toggleP").click(function () {
+                $(".modal").toggle();
+            });
+
+            $(".makeTransfer").click(() => {
+                $(".transferaction").toggle()
+            })
+
+            $("#submitBtn").click(function () {
+                $(".modal").toggle();
+            });
+            $("#submitSavings").click(function () {
+                $(".modal").toggle();
+            });
+
+            $(document).keypress((event) => {
+                if (event.which === 13) {
+                    $(".modal").toggle();
+                }
+            })
+
+            // Handle radio button toggle behavior
+            $('input[type="radio"]').click(function () {
+                $('input[type="radio"]').not(this).prop('checked', false);
+            });
+
+            // Function to handle form submission
+            function handleFormSubmit(event) {
+                event.preventDefault(); // Prevent default form submission behavior
+                const transactionType = $('input[name="transactionType"]:checked').val();
+                const amount = $('#amountInput').val();
+                const name = "{{.User.FirstName}}"; // Replace this with your Go template tag
+
+                // Checkboxes for checking and savings accounts
+                const checkingAccount = $('input[name="checking"]').is(":checked");
+                const savingsAccount = $('input[name="savings"]').is(":checked");
+
+                // Construct the API URL based on the selected transaction type and account
+                let apiUrl = "";
+                if (transactionType === "withdraw") {
+                    if (checkingAccount) {
+                        apiUrl = `/user/withdraw/checking/${name}`;
+                    } else if (savingsAccount) {
+                        apiUrl = `/user/withdraw/savings/${name}`;
+                    }
+                } else if (transactionType === "deposit") {
+                    if (checkingAccount) {
+                        apiUrl = `/user/deposit/checking/${name}`;
+                    } else if (savingsAccount) {
+                        apiUrl = `/user/deposit/savings/${name}`;
+                    }
+                }
+
+                // Update the form's action attribute with the appropriate URL
+                $("#transactionForm").attr("action", apiUrl);
+
+                // Submit the form
+                $("#transactionForm").off("submit", handleFormSubmit); // Remove the event listener to avoid recursion
+                $("#transactionForm")[0].submit();
+            }
+
+            // Add an event listener to the form submission
+            $("#transactionForm").submit(handleFormSubmit);
+
+        });
+
+    </script>
+</body>
+
+</html>
