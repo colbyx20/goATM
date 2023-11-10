@@ -40,7 +40,6 @@ func main() {
 	}
 
 	var err error
-	// tmpl := template.Must(template.ParseFiles("static/index.html"))
 	indexTemplate = template.Must(template.ParseFiles("src/index.html"))
 	if err != nil {
 		log.Fatal("Error parsing HTML template:", err)
@@ -68,6 +67,7 @@ func main() {
 	router.HandleFunc("/user/balance/{name}", bank.CheckBalance).Methods("GET")
 	router.HandleFunc("/user/transfer/{name}", bank.MakeTransfer).Methods("POST")
 
+	router.PathPrefix("/").Handler(http.StripPrefix("/", http.FileServer(http.Dir("src/"))))
 	http.ListenAndServe(":4000", router)
 
 }

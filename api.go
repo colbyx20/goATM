@@ -212,12 +212,8 @@ func (b *Bank) DepositeMoneySavings(w http.ResponseWriter, r *http.Request) {
 			Statements: u.BankStatement,
 		}
 
-		// indexTemplate = template.Must(template.ParseFiles("static/index.html"))
-		// indexTemplate.Execute(w,data)
-
 		renderHTMLTemplate(w, userTemplate, data)
-
-		// json.NewEncoder(w).Encode(&newTransaction)
+		
 		return
 	} else {
 		json.NewEncoder(w).Encode(map[string]string{"User Doesn't Exist: ": name})
